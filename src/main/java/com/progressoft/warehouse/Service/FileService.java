@@ -13,12 +13,12 @@ public class FileService {
     @Autowired
     FileRecordRepository fileRecordRepository;
 
-    public long validateFileNotImported(String fileName) {
+    public long getNextFileId(String fileName) throws Exception{
         if (fileRecordRepository.getFileRecordByFileName(fileName) != null) {
-            return -1;
+            throw new Exception("File already imported");
         } else {
             fileRecordRepository.addFileName(fileName);
-            return fileRecordRepository.getMaxFileId();
+                   return fileRecordRepository.getMaxFileId();
         }
     }
 

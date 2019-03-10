@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+    <ui:composition template="layout.xhtml">
+        <ui:define name="content">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    Reports
+                </li>
+                <li class="breadcrumb-item active">
+                    Full reports
+                </li>
+            </ol>
+
+            <div class="row">
+                <div class="col-xl-3 col-sm-6 mb-3">
+                    <div class="card text-white bg-warning o-hidden h-100">
+                        <div class="card-body">
+                            <div class="card-body-icon">
+                                <i class="fa fa-fw fa-list"></i>
+                            </div>
+                            <div class="mr-5">UAE Competitors Full Report</div>
+                        </div>
+                        <a class="card-footer text-white clearfix small z-1" href="/report-all-print?currency=AED">
+                            <span class="float-left">Generate and Download</span>
+                            <span class="float-right">
+                                <i class="fa fa-angle-right"></i>
+                            </span>
+                        </a>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-sm-6 mb-3">
+                    <div class="card text-white bg-warning o-hidden h-100">
+                        <div class="card-body">
+                            <div class="card-body-icon">
+                                <i class="fa fa-fw fa-list"></i>
+                            </div>
+                            <div class="mr-5">Saudi Competitors Full Report</div>
+                        </div>
+                        <a class="card-footer text-white clearfix small z-1" href="/report-all-print?currency=SAR">
+                            <span class="float-left">Generate and Download</span>
+                            <span class="float-right">
+                                <i class="fa fa-angle-right"></i>
+                            </span>
+                        </a>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-sm-6 mb-3">
+                    <div class="card text-white bg-warning o-hidden h-100">
+                        <div class="card-body">
+                            <div class="card-body-icon">
+                                <i class="fa fa-fw fa-list"></i>
+                            </div>
+                            <div class="mr-5">Egypt Competitors Full Report</div>
+                        </div>
+                        <a class="card-footer text-white clearfix small z-1" href="/report-all-print?currency=EGP">
+                            <span class="float-left">Generate and Download</span>
+                            <span class="float-right">
+                                <i class="fa fa-angle-right"></i>
+                            </span>
+                        </a>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-sm-6 mb-3">
+                    <div class="card text-white bg-warning o-hidden h-100">
+                        <div class="card-body">
+                            <div class="card-body-icon">
+                                <i class="fa fa-fw fa-list"></i>
+                            </div>
+                            <div class="mr-5">All countries  Competitors Full Report (Egypt , Saudi , UAE)</div>
+                        </div>
+                        <a class="card-footer text-white clearfix small z-1" href="/report-all-print?currency=EGP&amp;currency=SAR&amp;currency=AED">
+                            <span class="float-left">Generate and Download</span>
+                            <span class="float-right">
+                                <i class="fa fa-angle-right"></i>
+                            </span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </ui:define>
+    </ui:composition>
+</html>
+

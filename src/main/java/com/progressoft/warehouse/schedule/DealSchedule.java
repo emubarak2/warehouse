@@ -31,7 +31,7 @@ public class DealSchedule {
      */
 //    @Scheduled(fixedDelay = 1 * 1 * 1000) // every 3 hours
     @LogMethodExecutionTime
-    public void dealImportCron(String fileName) {
+    public void dealImportCron(String fileName) throws Exception {
         long startT = System.nanoTime();
         this.startTime = System.nanoTime();
 

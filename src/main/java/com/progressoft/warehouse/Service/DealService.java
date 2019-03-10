@@ -25,6 +25,10 @@ import java.util.List;
 public class DealService {
 
 
+//    @Autowired
+//    ValiatorFactory factory;
+
+
     @Autowired
     private BatchRepository batchRepository;
     @Autowired
@@ -32,35 +36,68 @@ public class DealService {
     @Autowired
     private DealsCountService dealsCountService;
 
-    public void importRecords(String fileName) {
+    public void importRecords(String fileName) throws Exception {
         long start2 = System.nanoTime();
-        long fileIndex = fileService.validateFileNotImported(fileName);
+
+        long fileIndex = fileService.getNextFileId(fileName);
 
 
-        if (fileIndex != -1) {
-            List<CsvDealRecord> dealRecords = CsvParserUtility.getDealsRecordsFromFile(fileName, "\n");
+//        if (fileIndex != -1) {
 
-            dealRecords.stream().forEach(d -> {
-                List<Violation> violationList = validateRecord(d);
-                d.setFileId(fileIndex);
+        List<CsvDealRecord> dealRecords = CsvParserUtility.getDealsRecordsFromFile(fileName, "\n");
+
+        dealRecords.parallelStream().forEach(d -> {
+            List<Violation> violationList = validateRecord(d);
+            d.setFileId(fileIndex);
+            try {
                 d.setTimeStamp(DateUtility.stringToDate(d.getTimeStamp()));
-                if (violationList.size() > 0) {
-                    d.setViolationsList(violationList);
-                }
-            });
+            } catch (Exception e) {
+            }
+            if (violationList.size() > 0) {
+                d.setViolationsList(violationList);
+            }
+        });
 
 
-            System.out.println(
-                    "importRecords  : " +
-                            Precision.round((System.nanoTime() - start2) / 1000000000L, 6));
+        System.out.println(
+                "importRecords  : " +
+                        Precision.round((System.nanoTime() - start2) / 1000000000L, 6));
 
-            saveRecordsToDatabase(dealRecords);
-            dealsCountService.aggregateDealsCount(dealRecords);
-        }
+        saveRecordsToDatabase(dealRecords);
+        dealsCountService.aggregateDealsCount(dealRecords);
+
     }
 
-
     public List<Violation> validateRecord(CsvDealRecord record) {
+//        ///am
+//
+//        List<Field> fields = Arrays.asList(record.getClass().getDeclaredFields())
+//                .stream()
+//                .filter(declaredField -> declaredField.getAnnotation(CsvDealRecord.Validate.class) != null)
+//                .collect(Collectors.toList());
+//        for (Field f : fields) {
+//
+//            CsvDealRecord.Validate annotation = f.getAnnotation(CsvDealRecord.Validate.class);
+//
+//            Class<? extends CsvDealRecord.Validator> value = annotation.value();
+//            CsvDealRecord.Validator validator = factory.getValidator(value);
+//            try {
+//                f.setAccessible(true);
+//                String o = (String) f.get(record);
+//                String toLow = o.toLowerCase();
+//                validator.isValid(o);
+//
+//
+//            } catch (Exception e) {
+//                violationList.add(new Violation(record.getFileId(), f.getName(), e.getMessage()));
+//            }
+//
+//
+//
+//
+//        }
+//
+//        //
         List<Violation> violationList = new ArrayList<>();
         for (Field field : record.getClass().getDeclaredFields()
                 ) {

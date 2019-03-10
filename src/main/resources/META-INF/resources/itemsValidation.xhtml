@@ -1,0 +1,305 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:c="http://java.sun.com/jsp/jstl/core">
+    <ui:composition template="layout.xhtml">
+        <ui:define name="content">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    Items
+                </li>
+                <li class="breadcrumb-item active">
+                    Items Validation
+                </li>
+            </ol>
+            <style>
+                .hasDatepicker{
+                    width: 50%
+                }
+                .ui-dialog{
+                    z-index: 2002 !important;
+
+                }
+                .ui-datatable-odd {
+                    background-color: #ececec;
+                }
+                .ui-selectcheckboxmenu .ui-selectcheckboxmenu-label {
+                    font-size: 12px !important;
+                }
+                .ui-widget-header .ui-chkbox .ui-widget {
+                    display:none;
+                }
+                .label-panel{
+                    width: 100px;
+                }
+            </style>
+            <div class="row">
+                <div class="col-12">
+
+                    <h:form id="form">
+                        <p:growl id="msgs" showDetail="true" />
+                        <p:dataTable value="#{itemMB.items}" 
+                                     var="data" 
+                                     paginator="true" 
+                                     rows="5"
+                                     paginatorTemplate="{RowsPerPageDropdown}  {FirstPageLink} {PreviousPageLink}  {NextPageLink} {LastPageLink}"
+                                     rowsPerPageTemplate="5,10,20,40" 
+                                     id="itemsTable" 
+                                     lazy="true"
+                                     draggableColumns="true"
+                                     widgetVar="itemsTableWid"
+                                     filteredValue="#{itemMB.filteredItems}"
+                                     resizableColumns="true"
+                                     tableStyleClass="table table-stripped"
+                                     styleClass="borderless"
+                                     currentPageReportTemplate="Showing {startRecord}-{endRecord} out of {totalRecords}">
+
+                            <p:column headerText="Titles" style="width:45px">
+                                <p:rowToggler />
+                            </p:column>
+                            <p:column headerText="Category" filterBy="#{data.category}" sortBy="#{data.category}" >
+                                <h:outputText value="#{data.category}" />
+                            </p:column>
+
+                            <p:column headerText="EAN" filterBy="#{data.ean}" filterMatchMode="contains"  sortBy="#{data.ean}">
+
+                                <a href="#{data.itemSouqUrl}" target="_blank"><h:outputText value="#{data.ean}" /></a>
+                            </p:column>
+                            <p:column headerText="Competitor" filterBy="#{data.compName}" sortBy="#{data.compName}">
+                                <h:outputText value="#{data.compName}"  />
+                            </p:column>
+                            <p:column headerText="Price" style="width: 83px;">
+                                <h:outputText  value="#{data.latestPrice}" />
+                            </p:column>
+<!--                            <p:column headerText="Title" filterBy="#{data.title}" filterMatchMode="contains" sortBy="#{data.title}">
+                                <h:outputText value="#{data.title}"/>
+                            </p:column>-->
+                            <p:column headerText="Competitor Item" filterBy="#{data.compItemId}" filterMatchMode="contains" sortBy="#{data.compItemId}">
+                                <a href="#{data.itemUrl}" target="_blank"><h:outputText value="#{data.compItemId}" /></a>
+                            </p:column>
+                            <p:column headerText="Item State" filterBy="#{data.state}"  sortBy="#{data.state}">
+                                <f:facet name="filter">
+                                    <p:selectCheckboxMenu label="State" 
+                                                          panelStyle="width:190px" 
+                                                          scrollHeight="150"
+                                                          updateLabel="true"
+                                                          onchange="PF('itemsTableWid').filter()">
+                                        <f:selectItem  itemLabel="Validated" itemValue="VALIDATED" />
+                                        <f:selectItem  itemLabel="Skipped" itemValue="SKIPPED" />
+                                        <f:selectItem  itemLabel="Title changed" itemValue="ITEM_TITLE_CHANGE_SAME_SKU" />
+                                        <f:selectItem  itemLabel="Needs validation" itemValue="null"  />
+                                    </p:selectCheckboxMenu>
+                                </f:facet>
+                                <p:outputLabel value="#{data.state == null ? 'Not Validated' : data.state}"  >
+                                </p:outputLabel>
+                            </p:column>
+                            <p:column headerText="Country" filterBy="#{data.itemCountry}"  sortBy="#{data.itemCountry}">
+                                <f:facet name="filter">
+                                    <p:selectCheckboxMenu label="Country" 
+                                                          panelStyle="width:190px" 
+                                                          scrollHeight="150"
+                                                          updateLabel="true"
+                                                          onchange="PF('itemsTableWid').filter()">
+                                        <f:selectItem  itemLabel="KSA" itemValue="KSA" />
+                                        <f:selectItem  itemLabel="EGY" itemValue="EGY" />
+                                        <f:selectItem  itemLabel="UAE" itemValue="UAE"  />
+                                    </p:selectCheckboxMenu>
+                                </f:facet>
+                                <p:outputLabel value="#{data.itemCountries == null ? 'All ' : data.itemCountries}"  >
+                                </p:outputLabel>
+                            </p:column>
+                            <p:column headerText="STATUS" filterBy="#{data.itemStatus}"  sortBy="#{data.itemStatus}">
+                                <f:facet name="filter">
+                                    <p:selectCheckboxMenu label="Status" 
+                                                          panelStyle="width:190px" 
+                                                          scrollHeight="150"
+                                                          updateLabel="true"
+                                                          onchange="PF('itemsTableWid').filter()">
+                                        <f:selectItem  itemLabel="Process" itemValue="PROCESS" />
+                                        <f:selectItem  itemLabel="Ignored" itemValue="IGNORE" />
+                                    </p:selectCheckboxMenu>
+                                </f:facet>
+                                <p:outputLabel value="#{data.itemStatus == null ? 'Contact admin and submit the ean' : data.itemStatus}"  >
+                                </p:outputLabel>
+                            </p:column>
+
+                            <p:column headerText="Valid" style="text-align: center;width: 50px">
+                                <p:selectBooleanCheckbox rendered="#{data.state == null}" value="#{data.valid}" >
+                                    <p:ajax   update=":form:itemsTable:showDialogPanel" />
+                                </p:selectBooleanCheckbox>  
+                            </p:column>
+
+                            <p:column headerText="Action">
+                                <p:outputPanel id="showDialogPanel">
+                                    <p:outputPanel rendered="#{!data.valid &amp;&amp; data.state == null}">
+                                        <p:commandButton styleClass="custom-pf-button" id="showDialogBtn"  value="Set new comp SKU" oncomplete="PF('selectedItemsWid').show()" update=":form:multiItemsDetails :form:dialogFooter" actionListener="#{itemMB.setSelectedItem(data, 'NEW_COMP_ID')}"/>
+                                        <br/>
+                                        <p:commandButton styleClass="custom-pf-button" id="showDialogBtn2"  value="Doesnt Exist" oncomplete="PF('selectedItemsWid').show()" update=":form:multiItemsDetails :form:dialogFooter" actionListener="#{itemMB.setSelectedItem(data, 'NO_COMP_ID')}"/>
+
+                                    </p:outputPanel>
+                                    <p:commandButton styleClass="custom-pf-button" id="saveAsValidBtn" rendered="#{data.valid &amp;&amp; data.state == null}"  value="Save as valid" oncomplete="PF('selectedItemsWid').show()" update=":form:multiItemsDetails :form:dialogFooter" actionListener="#{itemMB.setSelectedItem(data, 'VALID')}"/>
+                                </p:outputPanel>
+                                <p:commandButton styleClass="custom-pf-button" value="Re-Validate" rendered="#{data.state != null}"  actionListener="#{itemMB.setSelectedItem(data)}" oncomplete="PF('revalidateDialogWid').show()" update=":form:multiItemsDetails2"  style=""/>
+                                <br/>
+                                <p:commandButton styleClass="custom-pf-button" value="Accept New Title" rendered="#{data.state == 'ITEM_TITLE_CHANGE_SAME_SKU'}"  actionListener="#{itemMB.setSelectedItemAndGetCompetitorTitle(data)}" oncomplete="PF('acceptTitleChangeDialogWid').show()" update=":form:multiItemsDetails3 :form:actionsForChangeTitle"  style=""/>
+                            </p:column>
+
+                            <p:rowExpansion>
+                                <p:panelGrid  columns="2" columnClasses="label-panel,value" style="width:100%">
+                                    <f:facet name="header">
+                                        Titles compare 
+                                    </f:facet>
+
+                                    <h:outputText value="Souq Title : " />
+                                    <h:outputText value="#{data.title}" />
+
+                                    <h:outputText value="Comp Title : " />
+                                    <h:outputText value="#{data.compItemTitle}" />
+
+                                </p:panelGrid>
+                            </p:rowExpansion>
+                        </p:dataTable>
+
+
+
+                        <p:dialog header="Confirm" widgetVar="selectedItemsWid" modal="false" appendTo=":form" showEffect="fade" hideEffect="fade" resizable="true" closable="true" width="500" draggable="true">
+                            <p:outputPanel id="multiItemsDetails" style="text-align:center;">
+
+                                <p:outputPanel rendered="#{itemMB.dialogState == 'VALID'}">
+                                    <div class="ui-g">
+                                        <div class="ui-g-12">
+                                            Are you sure you want to save this ?
+                                        </div>
+                                    </div>
+                                </p:outputPanel>
+                                <p:outputPanel rendered="#{itemMB.dialogState == 'NO_COMP_ID'}">
+                                    <div class="ui-g">
+                                        <div class="ui-g-12">
+                                            The item will be skipped , are you sure ?
+                                        </div>
+                                    </div>
+                                </p:outputPanel>
+
+                                <div class="ui-g">
+                                    <div class="ui-g-6">
+                                        <h:outputText value="Souq EAN " />
+                                    </div>
+                                    <div class="ui-g-6">
+                                        <h:outputText value="#{itemMB.selectedData.ean}" />
+                                    </div>
+                                </div>
+                                <div class="ui-g">
+                                    <div class="ui-g-6">
+                                        <h:outputText value="Competitor Item Id" />
+                                    </div>
+                                    <div class="ui-g-6">
+                                        <p:outputPanel id="inputCompItemId">
+                                            <p:inputText rendered="#{itemMB.dialogState == 'NEW_COMP_ID'}" value="#{itemMB.selectedData.compItemId}" />
+                                            <h:outputText rendered="#{itemMB.dialogState == 'VALID'}" value="#{itemMB.selectedData.compItemId}"/>
+                                        </p:outputPanel>
+
+                                    </div>
+                                </div>
+                                <div class="ui-g">
+                                    <div class="ui-g-6">
+                                        <h:outputText rendered="#{itemMB.selectedData.showCompUrlInput}"  value="Competitor Item URL" />
+                                    </div>
+                                    <div class="ui-g-6">
+                                        <p:outputPanel >
+                                            <p:inputText rendered="#{itemMB.dialogState == 'NEW_COMP_ID' &amp;&amp; itemMB.selectedData.showCompUrlInput}" value="#{itemMB.selectedData.compItemUrl}" />
+                                        </p:outputPanel>
+
+                                    </div>
+                                </div>
+                            </p:outputPanel>
+
+                            <f:facet name="footer" id="dialogFooter">
+                                <p:outputPanel id="dialogFooter">
+                                    <p:commandButton rendered="#{itemMB.dialogState == 'NEW_COMP_ID'}" value="Save"  actionListener="#{itemMB.setItemAsInvalid()}" oncomplete="PF('selectedItemsWid').hide()" update=":form:msgs :form:itemsTable"/>
+                                    <p:commandButton rendered="#{itemMB.dialogState == 'NO_COMP_ID'}" value="Yes Sure"  actionListener="#{itemMB.setItemAsSkipped()}" oncomplete="PF('selectedItemsWid').hide()" update=":form:msgs :form:itemsTable"/>
+                                    <p:commandButton rendered="#{itemMB.dialogState == 'VALID'}" value="Yes Save"  actionListener="#{itemMB.saveItemAndSetAsValidated()}" oncomplete="PF('selectedItemsWid').hide()" update=":form:msgs :form:itemsTable"/>
+                                    <p:commandButton value="Cancel" oncomplete="PF('selectedItemsWid').hide()" />
+
+                                </p:outputPanel>
+                            </f:facet>
+                        </p:dialog>
+                        <p:dialog header="Confirm" widgetVar="revalidateDialogWid" modal="false" appendTo=":form" showEffect="fade" hideEffect="fade" resizable="true" closable="true" width="500" draggable="true">
+                            <p:outputPanel id="multiItemsDetails2" style="text-align:center;">
+                                <h3>Are you sure you want to <b>re-validate</b>  </h3>
+                                <p:panelGrid columns="2" style="width: 100%">
+                                    <h:outputText value="ean"/>
+                                    <h:outputText value="#{itemMB.selectedData.ean}"/>
+
+                                    <h:outputText value="competitor"/>
+                                    <h:outputText value="#{itemMB.selectedData.compName}"/>
+
+                                    <h:outputText value="competitor item id"/>
+                                    <h:outputText value="#{itemMB.selectedData.compItemId}"/>
+
+
+                                </p:panelGrid>
+                            </p:outputPanel>
+
+                            <f:facet name="footer"  >
+                                <p:outputPanel >
+                                    <p:commandButton value="Yes Sure"  actionListener="#{itemMB.removeStatesOfItem}" oncomplete="PF('revalidateDialogWid').hide()" update=":form:msgs :form:itemsTable"/>
+                                    <p:commandButton value="Cancel" oncomplete="PF('revalidateDialogWid').hide()" />
+
+                                </p:outputPanel>
+                            </f:facet>
+                        </p:dialog>
+                        <p:dialog header="Confirm" widgetVar="acceptTitleChangeDialogWid" modal="false" appendTo=":form" showEffect="fade" hideEffect="fade" resizable="true" closable="true" width="500" draggable="true">
+                            <p:outputPanel  id="multiItemsDetails3"  style="text-align:center;">
+                                <p:panel rendered="#{itemMB.compTitle != null}">
+                                    <h3>Are you sure you want to <b>Accept the competitor title</b>  </h3>
+                                    <p:panelGrid columns="2" style="width: 100%">
+                                        <h:outputText value="ean"/>
+                                        <h:outputText value="#{itemMB.selectedData.ean}"/>
+
+                                        <h:outputText value="competitor"/>
+                                        <h:outputText value="#{itemMB.selectedData.compName}"/>
+
+                                        <h:outputText value="competitor item id"/>
+                                        <h:outputText value="#{itemMB.selectedData.compItemId}"/>
+
+                                        <h:outputText value="SOUQ Title"/>
+                                        <h:outputText value="#{itemMB.selectedData.title}"/>
+
+                                        <h:outputText value="Competitor Title"/>
+                                        <h:outputText value="#{itemMB.compTitle}"/>
+                                    </p:panelGrid>
+                                </p:panel>
+
+                                <p:panel rendered="#{itemMB.compTitle == null}">
+                                    <h5>
+                                        the title could not be pulled for the following reason/s
+                                        <ul>
+                                            <li>The item is out of stock or is not avaliable on the competitor site</li>
+                                            <li>Something went wrong while pulling the title</li>
+                                        </ul>
+                                        <b>if you have any difficulties please contact : absaleh@souq.com and provide a description of your case.</b>
+                                    </h5>
+                                </p:panel>
+
+                            </p:outputPanel>
+
+                            <f:facet name="footer"  >
+                                <p:outputPanel id="actionsForChangeTitle">
+                                    <p:commandButton rendered="#{itemMB.compTitle != null}"  value="Yes Sure"  actionListener="#{itemMB.acceptTitle}" oncomplete="PF('acceptTitleChangeDialogWid').hide()" update=":form:msgs :form:itemsTable"/>
+                                    <p:commandButton value="Cancel" actionListener="#{itemMB.setCompTitleAsNull}"  oncomplete="PF('acceptTitleChangeDialogWid').hide()" />
+
+                                </p:outputPanel>
+                            </f:facet>
+                        </p:dialog>
+                    </h:form>
+
+                </div>
+            </div>
+        </ui:define>
+    </ui:composition>
+</html>

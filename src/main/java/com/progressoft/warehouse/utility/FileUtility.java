@@ -29,7 +29,7 @@ public class FileUtility {
         } catch (FileNotFoundException | UnsupportedEncodingException e) {
             log.info(e.getMessage());
         }
-        return null;
+        return null;//TODO: throw exception
     }
 
 }

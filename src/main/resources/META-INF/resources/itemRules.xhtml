@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:c="http://java.sun.com/jsp/jstl/core">
+    <ui:composition template="layout.xhtml">
+        <ui:define name="content">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    Items
+                </li>
+                <li class="breadcrumb-item active">
+                    Item Rules
+                </li>
+            </ol>
+            <style>
+                .hasDatepicker{
+                    width: 50%
+                }
+                .ui-dialog{
+                    z-index: 2002 !important;
+
+                }
+                .ui-datatable-odd {
+                    background-color: #ececec;
+                }
+                .ui-selectcheckboxmenu .ui-selectcheckboxmenu-label {
+                    font-size: 12px !important;
+                }
+                .ui-widget-header .ui-chkbox .ui-widget {
+                    display:none;
+                }
+                .label-panel{
+                    width: 100px;
+                }
+            </style>
+            <div class="row">
+                <div class="col-12">
+
+                    <h:form id="rules-form">
+                        <p:growl id="rules-msgs" showDetail="true"/>
+
+                        <p:dataTable id="compRules" var="rule" value="#{ItemRulesMB.rules}" editable="true" style="margin-bottom:20px">
+                            <f:facet name="header">
+                                Row Editing
+                            </f:facet>
+
+                            <p:ajax event="rowEdit" listener="#{ItemRulesMB.onRowEdit}" update=":rules-form:rules-msgs" />
+                            <p:ajax event="rowEditCancel" listener="#{ItemRulesMB.onRowCancel}" update=":rules-form:rules-msgs" />
+
+                            <p:column headerText="Id">
+                                <p:cellEditor>
+                                    <f:facet name="output"><h:outputText value="#{rule.id}" /></f:facet>
+                                    <f:facet name="input"><p:inputText disabled="true" id="comp-rule-id" value="#{rule.id}" style="width:100%"/></f:facet>
+                                </p:cellEditor>
+                            </p:column>
+
+                            <p:column headerText="CompKey">
+                                <p:cellEditor>
+                                    <f:facet name="output"><h:outputText value="#{rule.compKey}" /></f:facet>
+                                    <f:facet name="input"><p:inputText disabled="true" id="comp-rule-compkey" value="#{rule.compKey}" style="width:100%"/></f:facet>
+                                </p:cellEditor>
+                            </p:column>
+
+                            <p:column headerText="CompRule">
+                                <p:cellEditor>
+                                    <f:facet name="output"><h:outputText value="#{rule.rule}" /></f:facet>
+                                    <f:facet name="input"><p:inputText id="comp-rule-rule" value="#{rule.rule}" style="width:100%"/></f:facet>
+                                </p:cellEditor>
+                            </p:column>
+
+                            <p:column style="width:32px">
+                                <p:rowEditor />
+                            </p:column>
+                        </p:dataTable>
+                    </h:form>
+                </div>
+            </div>
+        </ui:define>
+    </ui:composition>
+</html>

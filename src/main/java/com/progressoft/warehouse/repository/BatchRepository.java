@@ -28,13 +28,11 @@ public class BatchRepository<T extends DealRecord> {
 
     public void saveBatch(List<CsvDealRecord> dealRecordList) {
 
-        long start2 = System.nanoTime();
 
         Map<String, String> batchQueries = dealsQueryBuilder(dealRecordList);
         decisionMaker(batchQueries);
-        System.out.println(
-                "jdbcTemplate.batchUpdate took :  " +
-                        Precision.round((System.nanoTime() - start2) / 1000000000L, 6));
+
+
 
     }
 
@@ -98,9 +96,17 @@ public class BatchRepository<T extends DealRecord> {
 
     public void batchThreadCreator(String query) {
         JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
-        Runnable runnable = () -> jdbcTemplate.batchUpdate(query.toString());
-        Thread t = new Thread(runnable);
-        t.start();
+
+//        Runnable runnable = () -> {
+            long start2 = System.nanoTime();
+            jdbcTemplate.batchUpdate(query.toString());
+
+            System.out.println(
+                    "jdbcTemplate.batchUpdate took :  " +
+                            Precision.round((System.nanoTime() - start2) / 1000000000L, 6));
+//        };
+//        Thread t = new Thread(runnable);
+//        t.start();
 
     }
 

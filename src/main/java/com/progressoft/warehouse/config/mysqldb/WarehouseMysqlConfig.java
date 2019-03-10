@@ -1,8 +1,11 @@
 package com.progressoft.warehouse.config.mysqldb;
 
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.jdbc.DataSourceBuilder;
+//import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -30,12 +33,12 @@ import javax.sql.DataSource;
 @PropertySource("application.properties")
 public class WarehouseMysqlConfig {
 
-    @Primary
-    @Bean(name = "WarehouseDataSource")
-    @ConfigurationProperties(prefix = "spring.datasource.warehouse")
-    public DataSource dataSource() {
-        return DataSourceBuilder.create().build();
-    }
+//    @Primary
+//    @Bean(name = "WarehouseDataSource")
+//    @ConfigurationProperties(prefix = "spring.datasource.warehouse")
+//    public DataSource dataSource() {
+//        return DataSourceBuilder.create().build();
+//    }
 
     @Primary
     @Bean(name = "WarehouseEntityManagerFactory")
@@ -50,27 +53,27 @@ public class WarehouseMysqlConfig {
                 .build();
     }
 
-//    @Value("${spring.datasource.ipro.jdbcUrl}")
-//    private String url;
-//    @Value("${spring.datasource.ipro.username}")
-//    private String userName;
-//    @Value("${spring.datasource.ipro.password}")
-//    private String password;
-//    @Value("${spring.datasource.ipro.driver-class-name:}")
-//    private String driverClass;
-//
-//    @Bean(name = "SouqIproDataSource")
-//    public DataSource dataSource() {
-//
-//        HikariConfig hikariConfig = new HikariConfig();
-//        hikariConfig.setJdbcUrl(url);
-//        hikariConfig.setUsername(userName);
-//        hikariConfig.setDriverClassName(driverClass);
-//        hikariConfig.setPassword(password);
-//
-//
-//        return new HikariDataSource(hikariConfig);
-//    }
+    @Value("${spring.datasource.warehouse.jdbcUrl}")
+    private String url;
+    @Value("${spring.datasource.warehouse.username}")
+    private String userName;
+    @Value("${spring.datasource.warehouse.password}")
+    private String password;
+    @Value("${spring.datasource.warehouse.driver-class-name:}")
+    private String driverClass;
+    @Primary
+    @Bean(name = "WarehouseDataSource")
+    public DataSource dataSource() {
+
+        HikariConfig hikariConfig = new HikariConfig();
+        hikariConfig.setJdbcUrl(url);
+        hikariConfig.setUsername(userName);
+        hikariConfig.setDriverClassName(driverClass);
+        hikariConfig.setPassword(password);
+
+
+        return new HikariDataSource(hikariConfig);
+    }
 //
 
     @Primary
