@@ -7,6 +7,7 @@ import com.univocity.parsers.csv.CsvParserSettings;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.math3.util.Precision;
 
+import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.List;
 
@@ -17,11 +18,10 @@ import java.util.List;
 public class CsvParserUtility {
 
 
-    public static List<CsvDealRecord> getDealsRecordsFromFile(String fileName, String lineSeparator) {
+    public static List<CsvDealRecord> getDealsRecordsFromFile(InputStreamReader inputStreamReader, String lineSeparator) {
         long start2 = System.nanoTime();
 
         BeanListProcessor<CsvDealRecord> rowProcessor = new BeanListProcessor<>(CsvDealRecord.class);
-        Reader inputStreamReader = FileUtility.getFileInputStreamByName(fileName);
         CsvParserSettings settings = new CsvParserSettings();
         settings.setRowProcessor(rowProcessor);
         settings.getFormat().setLineSeparator(lineSeparator);

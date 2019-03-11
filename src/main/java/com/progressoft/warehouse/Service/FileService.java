@@ -1,5 +1,6 @@
 package com.progressoft.warehouse.Service;
 
+import com.progressoft.warehouse.exception.FileExitsException;
 import com.progressoft.warehouse.repository.FileRecordRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,12 +14,12 @@ public class FileService {
     @Autowired
     FileRecordRepository fileRecordRepository;
 
-    public long getNextFileId(String fileName) throws Exception{
+    public long getNextFileId(String fileName) throws FileExitsException {
         if (fileRecordRepository.getFileRecordByFileName(fileName) != null) {
-            throw new Exception("File already imported");
+            throw new FileExitsException();
         } else {
             fileRecordRepository.addFileName(fileName);
-                   return fileRecordRepository.getMaxFileId();
+            return fileRecordRepository.getMaxFileId();
         }
     }
 

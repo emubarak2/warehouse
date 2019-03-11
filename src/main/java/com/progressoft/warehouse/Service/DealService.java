@@ -12,9 +12,12 @@ import org.apache.commons.math3.util.Precision;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.InputStreamReader;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 /**
  * Created by EYAD on 3/6/2019.
@@ -24,11 +27,6 @@ import java.util.List;
 @Slf4j
 public class DealService {
 
-
-//    @Autowired
-//    ValiatorFactory factory;
-
-
     @Autowired
     private BatchRepository batchRepository;
     @Autowired
@@ -36,15 +34,15 @@ public class DealService {
     @Autowired
     private DealsCountService dealsCountService;
 
-    public void importRecords(String fileName) throws Exception {
+    public List<Violation> importRecords(InputStreamReader inputStreamReader, long fileIndex) {
         long start2 = System.nanoTime();
 
-        long fileIndex = fileService.getNextFileId(fileName);
+//        long fileIndex = fileService.getNextFileId(fileName);
 
 
 //        if (fileIndex != -1) {
 
-        List<CsvDealRecord> dealRecords = CsvParserUtility.getDealsRecordsFromFile(fileName, "\n");
+        List<CsvDealRecord> dealRecords = CsvParserUtility.getDealsRecordsFromFile(inputStreamReader, "\n");
 
         dealRecords.parallelStream().forEach(d -> {
             List<Violation> violationList = validateRecord(d);
@@ -65,7 +63,13 @@ public class DealService {
 
         saveRecordsToDatabase(dealRecords);
         dealsCountService.aggregateDealsCount(dealRecords);
+        return getViolationRecords(dealRecords);
 
+    }
+
+    public List<Violation> getViolationRecords(List<CsvDealRecord> dealRecords) {
+     return  dealRecords.stream()
+                .flatMap(a -> a.getViolationsList().stream()).collect(Collectors.toList());
     }
 
     public List<Violation> validateRecord(CsvDealRecord record) {

@@ -42,7 +42,7 @@
                 <p:panelGrid columns="2" style="width: 100%" columnClasses="column1,column1">
 
                     <h:outputLabel rendered="false" value="set all records as VALIDATED"/>
-                    <p:selectBooleanCheckbox  rendered="false"   value="#{eanUploadMB.setAsValidated}"/>
+
 
 
                 </p:panelGrid>
@@ -69,49 +69,6 @@
 
                 <br/>
 
-                <p:panel rendered="#{eanUploadMB.uploadHasErrors}">
-                    <p:dataTable id="tbl" var="rec" value="#{eanUploadMB.errorRecords}" rows="10"
-                                 paginator="true"
-                                 paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown} {Exporters}"
-                                 rowsPerPageTemplate="5,10,15">
-                        <f:facet name="header">
-                            <h:outputText value="Errors found in the uploaded sheet"/>
-                        </f:facet>
-                        <f:facet name="{Exporters}">
-                            <h:commandLink>
-                                <span class="fa fa-download"/>
-                                <h:outputText value=" Download report" />
-                                <p:dataExporter type="csv" target="tbl" fileName="Ean_upload_errors" />
-                            </h:commandLink>
-                        </f:facet>
-                        <p:column headerText="Ean">
-                            <h:outputText value="#{rec.itemUpload.item.ean}" />
-                        </p:column>
-
-                        <p:column headerText="Title">
-                            <h:outputText value="#{rec.itemUpload.item.title}" />
-                        </p:column>
-
-                        <p:column headerText="Category">
-                            <h:outputText value="#{rec.itemUpload.item.category}" />
-                        </p:column>
-
-                        <p:column headerText="Competitor">
-                            <h:outputText value="#{rec.competitorInfo.comp_key} #{rec.competitorInfo.currency}" />
-                        </p:column>
-
-                        <p:column headerText="Competitor SKU">
-                            <h:outputText value="#{rec.competitorInfo.compItemId}" />
-                        </p:column>
-
-                        <p:column headerText="Reason">
-                            <h:outputText value="#{rec.message}" />
-                        </p:column>
-
-
-
-                    </p:dataTable>
-                </p:panel>
 
             </h:form>
 

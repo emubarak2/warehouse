@@ -16,7 +16,7 @@ public class LoginController {
     @RequestMapping(path = "/ean/", method = RequestMethod.GET)
     public String loginPage(String error)
     {
-        return "/eanUpload.xhtml";
+        return "/FileUpload.xhtml";
     }
 
         @RequestMapping(path = "/login1/", method = RequestMethod.GET)
@@ -25,5 +25,11 @@ public class LoginController {
             return "/login.xhtml";
         }
 
+
+    @RequestMapping(path = "/upload/", method = RequestMethod.GET)
+    public String upload(String error)
+    {
+        return "/eanUpload.xhtml";
+    }
 
 }

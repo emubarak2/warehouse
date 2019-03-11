@@ -83,7 +83,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     .antMatchers("/push-pulse").permitAll()
 
 
-                    .antMatchers("/ean-upload").permitAll()
+                    .antMatchers("/ean").permitAll()
 
                     .anyRequest().permitAll();
 

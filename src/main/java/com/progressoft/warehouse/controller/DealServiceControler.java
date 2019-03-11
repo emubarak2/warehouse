@@ -24,11 +24,11 @@ public class DealServiceControler {
     @Autowired
     private DealSchedule dealSchedule;
 
-    @RequestMapping(path = "/start/", produces = MediaType.APPLICATION_JSON_VALUE)
-    public void dolonSyncSchedule(@RequestParam("fileName") String fileName) {
-        try {
-            dealService.importRecords(fileName);
-        } catch (Exception e) { log.info(e.getMessage());
-        }
-    }
+//    @RequestMapping(path = "/start/", produces = MediaType.APPLICATION_JSON_VALUE)
+//    public void dolonSyncSchedule(@RequestParam("fileName") String fileName) {
+//        try {
+//            dealService.importRecords(fileName);
+//        } catch (Exception e) { log.info(e.getMessage());
+//        }
+//    }
 }

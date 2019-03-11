@@ -30,17 +30,17 @@ public class DealSchedule {
      * this is cron method that run the recovery process for dolon method  each 8 hours
      */
 //    @Scheduled(fixedDelay = 1 * 1 * 1000) // every 3 hours
-    @LogMethodExecutionTime
-    public void dealImportCron(String fileName) throws Exception {
-        long startT = System.nanoTime();
-        this.startTime = System.nanoTime();
-
-
-        dealService.importRecords(fileName);
-
-        this.startTime = System.nanoTime();
-        log.info("The method (dealImportCron) execution time in seconds was : " + Precision.round(((System.nanoTime() - startTime) / (double) 1000000000L), 2));
-    }
+//    @LogMethodExecutionTime
+//    public void dealImportCron(String fileName) throws Exception {
+//        long startT = System.nanoTime();
+//        this.startTime = System.nanoTime();
+//
+//
+//        dealService.importRecords(fileName);
+//
+//        this.startTime = System.nanoTime();
+//        log.info("The method (dealImportCron) execution time in seconds was : " + Precision.round(((System.nanoTime() - startTime) / (double) 1000000000L), 2));
+//    }
 
 
 }
