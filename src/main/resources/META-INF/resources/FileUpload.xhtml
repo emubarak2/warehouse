@@ -5,125 +5,84 @@
       xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
       xmlns:h="http://xmlns.jcp.org/jsf/html"
       xmlns:f="http://xmlns.jcp.org/jsf/core"
-      xmlns:p="http://primefaces.org/ui"
-      xmlns:sec="http://www.springframework.org/security/tags">
+      xmlns:p="http://primefaces.org/ui" xmlns:color="http://java.sun.com/jsf/html"
+>
 
 <h:head>
 
     <!-- For Bootstrap responsive grid -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css"/>
 
 </h:head>
 
 <h:body>
-<ui:composition template="layout.xhtml">
-    <ui:define name="content">
-        <style>
-            .column1{
-                width: 50%;
+    <ui:composition template="layout.xhtml">
+        <ui:define name="content">
+            <style>
+                .column1 {
+                    width: 50%;
 
-            }
-            .ui-growl-message {
-                width: 100% !important;
-            }
-        </style>
+                }
+
+                .ui-growl-message {
+                    width: 100% !important;
+                }
+            </style>
 
 
-        <sec:authorize  access="hasRole('ROLE_ADMIN')">
             <div class="alert alert-light">
-                <strong>Pull the latest xlsx file from  souq-pricing/dolon-input , <i>the file is automatically processed every Monday at 8 PM</i></strong><br/>
-                <p:commandButton actionListener="#{eanUploadMB.processLatestS3bucketFile}" value="Process Latest S3 File" update=":form:msgs"/>
+                <strong>Please follow the following steps to import deal sheet into datawarehouse</strong>
+                <ul>
+                    <li>Click on "Select file" and select the CSV file</li>
+                    <li>Click on "CSV Excel (.CSV only) sheet"</li>
+                    <li>Click on "Import File" and wait until the importing process finishs</li>
+                    <li>
+                        <strong>Please note that a report showing errors in your sheet will appear if we found any errors in your sheet</strong>
+                    </li>
+                </ul>
             </div>
-        </sec:authorize>
 
-        <div class="alert alert-light">
-            <strong>Please follow the following steps to import sheet into dolon</strong>
-            <ul>
-                <li>Click on "Download template" and fill the template</li>
-                <li>Click on "Choose Excel (.xlsx only) sheet" and select the template you filled with xlsx format</li>
-                <li>Click on "Import File" and wait until a success message appears </li>
-                <li><strong>Please note that a report showing errors in your sheet will appear if we found any errors in your sheet , fix them then re-do the steps, <i>You can download the report by clicking on "Download report"</i></strong></li>
-            </ul>
-        </div>
+            <p:panel rendered="#{eanUploadMB.uploadHasErrors}">
+                    <h:outputText value=" Download report" />
+                <f:facet name="{Exporters}">
+                    <h:outputText value=" Download report" />
+                    <h:commandLink>
+                        <h:outputText value=" Download report" />
+                        <p:dataExporter type="csv" target="tbl" fileName="Ean_upload_errors" />
+                    </h:commandLink>
+                </f:facet>
+            </p:panel>
 
-        3
-        4
-        5
-        6
-
-        <h:form enctype="multipart/form-data">
-        <p:fileUpload id="promotionSheet" label="Deal Sheet" value="#{fileUploadMB.uploadedFileStream}" fileUploadListener="#{fileUploadMB.fileUploadAction}" update="@this, messagesDilog fileName" mode="advanced" auto="true" fileLimit="1" allowTypes="/(\.|\/)(csv)$/" requiredMessage="Deals Sheet is requried" required="true"/>
-        <!--7oor-->
-        <p:outputLabel id="fileName" value="#{fileUploadMB.fileName}"/>
-
-        <p:commandButton value="Create" update="messagesDilog" action="#{fileUploadMB.processFile}" icon="ui-icon-check"/>
-        </h:form>
-
-
-        <h:form enctype="multipart/form-data">
-            <p:growl id="messages" showDetail="true" />
-
-            <h:form id="uploadForm" enctype="multipart/form-data">
-                <p:fileUpload value="#{fileUploadMB.file}"
-                              mode="advanced"
-                              fileUploadListener="#{fileUploadMB.handleFileUpload}"
-                              sizeLimit="111100000"
-                              allowTypes="/(\.|\/)(csv|jpe?g|png|GIF|JP?G|PNG)$/"
-                              auto="true"
-                              immediateUpload="false"
-
-                              allowFlash="#{fileUploadMB.useFlash}"
-                              fileLimit="1"/>
+            <h:form enctype="multipart/form-data">
+                <p:fileUpload id="promotionSheet"  label="Select file, only CSV file format is allowed   "
+                              value="#{fileUploadMB.uploadedFileStream}"
+                              fileUploadListener="#{fileUploadMB.fileUploadAction}"
+                              update="@this, messagesDilog fileName,usePanelGroup"
+                              mode="advanced" auto="true" fileLimit="1" allowTypes="/(\.|\/)(csv)$/"
+                              requiredMessage="Deals Sheet is requried" required="true"
+                              process="@this, messagesDilog fileName"
+                />
+                <p:growl id="message" showDetail="true"/>
+                <p:outputLabel id="fileName" value="#{fileUploadMB.fileName}"/>
+                <br/>
+                <p:commandButton value="Import sheet"
+                                 action="#{fileUploadMB.processFile}" icon="ui-icon-check" update="report"/>
             </h:form>
 
-            <p:fileUpload value="#{fileUploadMB.file}" mode="simple" skinSimple="true" multiple="true" />
-            <p:fileUpload fileUploadListener="#{fileUploadMB.handleFileUpload}" mode="simple" dragDropSupport="false"
-                          update="messages" sizeLimit="11100000" fileLimit="3" allowTypes="/(\.|\/)(csv|jpe?g|png)$/" multiple="true"  />
-            <br /> <br />
-
-            <p:commandButton value="Submit" ajax="false"  disabled="false"  />
-        </h:form>
-
-        <h:form id="form" enctype="multipart/form-data">
-            <p:growl id="msgs" showDetail="true" sticky="true"/>
-            <p:panelGrid columns="2" style="width: 100%" columnClasses="column1,column1">
-
-                <h:outputLabel rendered="false" value="set all records as VALIDATED"/>
-
-
-
-            </p:panelGrid>
-            <ol>
-                <li>
-                    <div class="alert alert-light">
-                        <a href="/download-import-template" >Download template</a>
-                    </div>
-                </li>
-                <li>
-
-                    <p:fileUpload label="Choose Excel (.xlsx only) sheet" fileUploadListener="#{fileUploadMB.handleFileUpload}" mode="simple" auto="true" update=":form:filenameField" multiple="true"  allowTypes="/(\.|\/)(csv)$/" ajax="false">
-                    <!--<p:fileUpload label="Choose Excel (.xlsx only) sheet" value="#{fileUploadMB.file}" mode="advanced" auto="true" update=":form:filenameField" multiple="false"  allowTypes="/(\.|\/)(csv)$/">-->
-                        <b><i><h:outputText id="filenameField" value=" #{fileUploadMB.fileName}" /></i></b>
-                    </p:fileUpload>
-                    <br/>
-                </li>
-                <li>
-                    <!--<p:commandButton value="Submit" ajax="false" action="#{fileUploadMB.upload}" disabled="false" />-->
-                    <p:commandButton value="Submit" ajax="true"  />/>
-
-                    <p:commandButton actionListener="#{fileUploadMB.processFile}" value="Import File" ajax="false"/>
-
-                </li>
-            </ol>
-
+            <p:dialog modal="true" widgetVar="statusDialog" header="Importing in progress" draggable="false" closable="false"
+                      resizable="false">
+                <p:panel rendered="#{fileUploadMB.stringReport}"/>
+            </p:dialog>
 
             <br/>
+            <h:panelGroup id="usePanelGroup" ajaxRendered="true" widgetVar="test">
+                <br/>
+                    <h:outputText  escape="false" style="color: red" id="report" value="#{fileUploadMB.stringReport}"/>
+                    <p:panel rendered="#{fileUploadMB.stringReport}"/>
+            </h:panelGroup>
 
-
-        </h:form>
-
-    </ui:define>
-</ui:composition>
+        </ui:define>
+    </ui:composition>
 </h:body>
 </html>
 

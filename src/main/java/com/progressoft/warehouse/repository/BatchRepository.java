@@ -55,7 +55,7 @@ public class BatchRepository<T extends DealRecord> {
         StringBuilder validSql = new StringBuilder();
         StringBuilder invalidSql = new StringBuilder();
         validSql.append("INSERT INTO DEALS_VALID_RECORDS (id, from_currency,to_currency,time_stamp, amount, file_id) VALUES ");
-        invalidSql.append("INSERT INTO DEALS_INVALID_RECORDS (id, from_currency,to_currency,time_stamp, amount,violations, file_id) VALUES ");
+        invalidSql.append("INSERT INTO DEALS_INVALID_RECORDS (id, from_currency,to_currency,time_stamp, amount,violation, file_id) VALUES ");
 
         dealRecordList.forEach(d -> {
             switch (d.getViolationsList().size()) {
@@ -96,17 +96,13 @@ public class BatchRepository<T extends DealRecord> {
 
     public void batchThreadCreator(String query) {
         JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
-
-//        Runnable runnable = () -> {
             long start2 = System.nanoTime();
             jdbcTemplate.batchUpdate(query.toString());
 
             System.out.println(
                     "jdbcTemplate.batchUpdate took :  " +
                             Precision.round((System.nanoTime() - start2) / 1000000000L, 6));
-//        };
-//        Thread t = new Thread(runnable);
-//        t.start();
+
 
     }
 

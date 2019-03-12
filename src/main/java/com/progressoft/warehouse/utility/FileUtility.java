@@ -1,6 +1,7 @@
 package com.progressoft.warehouse.utility;
 
 import lombok.extern.java.Log;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
 import java.util.Arrays;
@@ -20,6 +21,23 @@ public class FileUtility {
         return transactionFiles;
     }
 
+    public static File convertMultiToFile(MultipartFile file)
+    {
+        File convFile = new File(file.getOriginalFilename());
+
+        try {
+            convFile.createNewFile();
+            FileOutputStream fos = null;
+            fos = new FileOutputStream(convFile);
+            fos.write(file.getBytes());
+            fos.close();
+            return convFile;
+        } catch ( IOException e) {
+            e.printStackTrace();
+             return null;
+        }
+
+    }
 
     public static Reader getFileInputStreamByName(String fileName) {
 

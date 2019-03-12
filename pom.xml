@@ -10,7 +10,7 @@
 
         <groupId>org.joinfaces</groupId>
         <artifactId>jsf-spring-boot-parent</artifactId>
-        <version>2.4.1</version>
+        <version>2.4.2</version>
         <relativePath/> <!-- lookup parent from repository -->
 
 
@@ -40,6 +40,7 @@
     <description>Demo project for Spring Boot</description>
 
     <dependencies>
+
         <dependency>
             <groupId>com.opencsv</groupId>
             <artifactId>opencsv</artifactId>
@@ -62,10 +63,7 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
         </dependency>
-        <!--<dependency>-->
-            <!--<groupId>org.springframework.boot</groupId>-->
-            <!--<artifactId>spring-boot-starter-thymeleaf</artifactId>-->
-        <!--</dependency>-->
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
@@ -88,6 +86,12 @@
             <artifactId>lombok</artifactId>
             <version>1.16.22</version>
         </dependency>
+
+        <!--<dependency>-->
+            <!--<groupId>org.springframework.boot</groupId>-->
+            <!--<artifactId>spring-boot-starter-thymeleaf</artifactId>-->
+        <!--</dependency>-->
+
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
@@ -125,11 +129,13 @@
             <artifactId>primefaces</artifactId>
             <version>6.1</version>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/org.primefaces.themes/all-themes -->
         <dependency>
             <groupId>org.primefaces.themes</groupId>
             <artifactId>all-themes</artifactId>
-            <version>${all-themes.version}</version>
+            <version>1.0.10</version>
         </dependency>
+
         <dependency>
             <groupId>org.ocpsoft.rewrite</groupId>
             <artifactId>rewrite-servlet</artifactId>
@@ -197,13 +203,13 @@
     </build>
 
 
-    <!--<repositories>-->
-        <!--<repository>-->
-            <!--<id>primefaces-maven-repository</id>-->
-            <!--<name>PrimeFaces Maven Repository</name>-->
-            <!--<url>http://repository.primefaces.org</url>-->
-        <!--</repository>-->
-    <!--</repositories>-->
+    <repositories>
+        <repository>
+            <id>primefaces-maven-repository</id>
+            <name>PrimeFaces Maven Repository</name>
+            <url>http://repository.primefaces.org</url>
+        </repository>
+    </repositories>
 
 
 </project>

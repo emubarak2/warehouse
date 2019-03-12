@@ -1,58 +1,73 @@
 package com.progressoft.warehouse.bean;
 
-import com.progressoft.warehouse.exception.FileExitsException;
 import com.progressoft.warehouse.Service.DealService;
 import com.progressoft.warehouse.Service.FileService;
 import com.progressoft.warehouse.entity.Violation;
-import com.progressoft.warehouse.utility.ReportUtil;
-
-import lombok.AllArgsConstructor;
+import com.progressoft.warehouse.exception.FileExitsException;
 import lombok.Data;
-import lombok.NoArgsConstructor;
+import org.apache.commons.math3.util.Precision;
 import org.primefaces.component.fileupload.FileUpload;
 import org.primefaces.event.FileUploadEvent;
+import org.primefaces.model.StreamedContent;
 import org.primefaces.model.UploadedFile;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
-
-import javax.annotation.ManagedBean;
 import javax.faces.application.FacesMessage;
-import javax.faces.bean.SessionScoped;
+import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
 import javax.inject.Named;
-import java.io.*;
+import java.beans.Transient;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Created by EYAD on 3/10/2019.
  */
-//@SessionScoped
-//@Component("fileUploadMB")
-//@ManagedBean("fileUploadMB")
+
+@ManagedBean(name = "fileUploadMB")
 @Named
 @ViewScoped
 @Data
-public class FileUploadMB implements Serializable {
+public class FileUploadMB extends FileUpload implements Serializable {
+    public UploadedFile file;
+    public UploadedFile upload;
     private boolean useFlash = true;
-    FileUploadMB(){
+    private List<CsvDealRecord> violationList = new ArrayList();
+    private String fileName = "";
+    private InputStream uploadedFileStream;
+    private String report;
+    private StreamedContent streamedReport;
+    private boolean uploadHasErrors;
+    private int uploadErrorsCount = 0;
+    @Autowired
+    private FileService fileService;
+    private FileUpload fileUpload;
+    @Autowired
+    private DealService dealService;
+    private String stringReport="Initial Value";
+
+    FileUploadMB() {
         System.out.println("in FileUploadMB constructor");
     }
-    private List<Violation> violationList = new ArrayList();
-    private String fileName = new String();
-    private InputStream uploadedFileStream;
 
     public String getFileName() {
         return fileName;
     }
-    public void fileUploadAction(FileUploadEvent event) throws IOException {
-        UploadedFile uploadedFile = event.getFile();
 
+    public String getStringReport() {
+        return this.stringReport;
+    }
+
+    @Transient(value = false)
+    public void fileUploadAction(FileUploadEvent event) throws IOException {
+        event.getComponent().setTransient(false);
+        UploadedFile uploadedFile = event.getFile();
+        this.file = event.getFile();
         try {
             this.uploadedFileStream = uploadedFile.getInputstream();
             this.fileName = "Uploaded Sheet: " + uploadedFile.getFileName();
@@ -62,19 +77,10 @@ public class FileUploadMB implements Serializable {
 
     }
 
-    public UploadedFile file;
-    private boolean uploadHasErrors;
-    private int uploadErrorsCount = 0;
-
-    @Autowired
-    private FileService fileService;
-    private FileUpload fileUpload;
-
-    @Autowired
-    private DealService dealService;
-
-
-    public UploadedFile upload;
+    @Override
+    public boolean isTransient() {
+        return false;
+    }
 
     public UploadedFile getFile() {
         return file;
@@ -90,9 +96,8 @@ public class FileUploadMB implements Serializable {
     }
 
 
-
     public void upload() {
-        if(file != null) {
+        if (file != null) {
             FacesMessage message = new FacesMessage("Succesful", file.getFileName() + " is uploaded.");
             FacesContext.getCurrentInstance().addMessage(null, message);
         }
@@ -100,59 +105,48 @@ public class FileUploadMB implements Serializable {
 
 
     public void upload(FileUploadEvent event) {
-        if(file != null) {
-            FacesMessage message = new FacesMessage("Succesful", file.getFileName() + " is uploaded.");
+        if (file != null) {
+            FacesMessage message = new FacesMessage("SucceSsful", file.getFileName() + " is uploaded.");
             FacesContext.getCurrentInstance().addMessage(null, message);
         }
     }
 
-    public void handleFileUpload(FileUploadEvent event) {
-        FacesMessage msg = new FacesMessage("Succesful", event.getFile().getFileName() + " is uploaded.");
-        FacesContext.getCurrentInstance().addMessage(null, msg);
-    }
-
 
     public void processFile() {
-//         List<Violation> violationList = new ArrayList();
-//         String fileName;
-//         InputStream uploadedFileStream;
-//        UploadedFile upf = event.getFile();
+        List<CsvDealRecord> dealRecords = new ArrayList();
+        String fileName;
+
         try {
-//           fileName = event.getFile().getFileName();
-//            uploadedFileStream = upf.getInputstream();
+            long start2 = System.nanoTime();
             fileName = this.file.getFileName();
             long fileIndex = fileService.getNextFileId(fileName);
-//            violationList = dealService.importRecords(new InputStreamReader(uploadedFileStream), fileIndex);
-            violationList = dealService.importRecords(new InputStreamReader(file.getInputstream()), fileIndex);
-            generateReport(violationList);
-//            processFile();
+            dealRecords = dealService.importRecords(new InputStreamReader(file.getInputstream()), fileIndex);
+
+            float timeConsumed = Precision.round((System.nanoTime() - start2) / 1000000000L, 6);
+            this.stringReport = generateReport(dealRecords, timeConsumed);
         } catch (IOException | FileExitsException ex) {
-            Logger.getLogger(FileUploadMB.class.getName()).log(Level.SEVERE, ex.getMessage(), ex);
+            report = ex.getMessage();
+            this.stringReport = ex.getMessage();
+
+
         }
     }
 
-//    public FileUploadMB() {
-//        this.fileName = this.file.getFileName();
-//    }
 
-//    public void processFile() throws FileExitsException {
-//
-//        try {
-//            long fileIndex = fileService.getNextFileId(fileName);
-//            violationList = dealService.importRecords(new InputStreamReader(uploadedFileStream), fileIndex);
-//            generateReport(violationList);
-//        } catch (FileExitsException ex) {
-//
-//            Logger.getLogger(FileUploadMB.class.getName()).log(Level.SEVERE, violationList.toString(), ex);
-//        }
-//
-//    }
+    public String generateReport(List<CsvDealRecord> dealRecords, float timeConsumed) {
 
-    public void generateReport(List<Violation> violationList) {
-        if (violationList != null && violationList.size() > 0) {
-            String violationString = violationList.toString();
-            ReportUtil.showMessage(FacesMessage.SEVERITY_INFO, "Invalid Record", violationString);
-        }
+        List<Violation> invalidRecords = dealService.getViolationRecords(dealRecords);
+        long validRecords = dealRecords.size() - invalidRecords.size();
+
+
+        StringBuilder sb = new StringBuilder(
+                "Your sheet has been imported successfully  '" + file.getFileName() +
+                        "<br /> importing time was : " + timeConsumed +
+                        "<br /> number of valid records was : " + validRecords +
+                        "<br /> number of invalid records was : " + invalidRecords.size());
+        return sb.toString();
+
     }
+
 
 }

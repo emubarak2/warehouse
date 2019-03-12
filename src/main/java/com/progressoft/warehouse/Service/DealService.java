@@ -34,13 +34,8 @@ public class DealService {
     @Autowired
     private DealsCountService dealsCountService;
 
-    public List<Violation> importRecords(InputStreamReader inputStreamReader, long fileIndex) {
+    public List<CsvDealRecord> importRecords(InputStreamReader inputStreamReader, long fileIndex) {
         long start2 = System.nanoTime();
-
-//        long fileIndex = fileService.getNextFileId(fileName);
-
-
-//        if (fileIndex != -1) {
 
         List<CsvDealRecord> dealRecords = CsvParserUtility.getDealsRecordsFromFile(inputStreamReader, "\n");
 
@@ -63,12 +58,12 @@ public class DealService {
 
         saveRecordsToDatabase(dealRecords);
         dealsCountService.aggregateDealsCount(dealRecords);
-        return getViolationRecords(dealRecords);
+        return dealRecords;
 
     }
 
     public List<Violation> getViolationRecords(List<CsvDealRecord> dealRecords) {
-     return  dealRecords.stream()
+     return  dealRecords.parallelStream()
                 .flatMap(a -> a.getViolationsList().stream()).collect(Collectors.toList());
     }
 
