@@ -12,10 +12,8 @@ import org.primefaces.model.StreamedContent;
 import org.primefaces.model.UploadedFile;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
-import javax.faces.context.FacesContext;
 import javax.inject.Named;
 import java.beans.Transient;
 import java.io.IOException;
@@ -26,7 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by EYAD on 3/10/2019.
+ * Created by eyadmubarak@amazon.com on 3/10/2019.
  */
 
 @ManagedBean(name = "fileUploadMB")
@@ -35,33 +33,21 @@ import java.util.List;
 @Data
 public class FileUploadMB extends FileUpload implements Serializable {
     public UploadedFile file;
-    public UploadedFile upload;
-    private boolean useFlash = true;
     private List<CsvDealRecord> violationList = new ArrayList();
-    private String fileName = "";
+    private String fileName;
     private InputStream uploadedFileStream;
     private String report;
-    private StreamedContent streamedReport;
-    private boolean uploadHasErrors;
-    private int uploadErrorsCount = 0;
+
     @Autowired
     private FileService fileService;
-    private FileUpload fileUpload;
     @Autowired
     private DealService dealService;
-    private String stringReport="Initial Value";
+    private String stringReport;
 
     FileUploadMB() {
         System.out.println("in FileUploadMB constructor");
     }
 
-    public String getFileName() {
-        return fileName;
-    }
-
-    public String getStringReport() {
-        return this.stringReport;
-    }
 
     @Transient(value = false)
     public void fileUploadAction(FileUploadEvent event) throws IOException {
@@ -80,35 +66,6 @@ public class FileUploadMB extends FileUpload implements Serializable {
     @Override
     public boolean isTransient() {
         return false;
-    }
-
-    public UploadedFile getFile() {
-        return file;
-    }
-
-    public void setFile(UploadedFile file) {
-        this.file = file;
-    }
-
-
-    public UploadedFile getUpload() {
-        return upload;
-    }
-
-
-    public void upload() {
-        if (file != null) {
-            FacesMessage message = new FacesMessage("Succesful", file.getFileName() + " is uploaded.");
-            FacesContext.getCurrentInstance().addMessage(null, message);
-        }
-    }
-
-
-    public void upload(FileUploadEvent event) {
-        if (file != null) {
-            FacesMessage message = new FacesMessage("SucceSsful", file.getFileName() + " is uploaded.");
-            FacesContext.getCurrentInstance().addMessage(null, message);
-        }
     }
 
 
@@ -141,9 +98,9 @@ public class FileUploadMB extends FileUpload implements Serializable {
 
         StringBuilder sb = new StringBuilder(
                 "Your sheet has been imported successfully  '" + file.getFileName() +
-                        "<br /> importing time was : " + timeConsumed +
+                        "<br /> importing time was : " + timeConsumed + " seconds" +
                         "<br /> number of valid records was : " + validRecords +
-                        "<br /> number of invalid records was : " + invalidRecords.size());
+                        "<br /> number of violations was : " + invalidRecords.size());
         return sb.toString();
 
     }

@@ -5,7 +5,5 @@ package com.progressoft.warehouse.exception;
  */
 public class FileExitsException extends  Exception{
 
-
-
-    public  FileExitsException() { super ("File already imported."); }
+    public  FileExitsException() { super ("File is already imported."); }
 }

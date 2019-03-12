@@ -14,7 +14,7 @@ public class FileService {
     @Autowired
     FileRecordRepository fileRecordRepository;
 
-    public long getNextFileId(String fileName) throws FileExitsException {
+    public synchronized long getNextFileId(String fileName) throws FileExitsException {
         if (fileRecordRepository.getFileRecordByFileName(fileName) != null) {
             throw new FileExitsException();
         } else {

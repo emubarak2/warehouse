@@ -37,21 +37,10 @@
                     <li>Click on "CSV Excel (.CSV only) sheet"</li>
                     <li>Click on "Import File" and wait until the importing process finishs</li>
                     <li>
-                        <strong>Please note that a report showing errors in your sheet will appear if we found any errors in your sheet</strong>
+                        <strong>Please note that a report message will appear about importing status.</strong>
                     </li>
                 </ul>
             </div>
-
-            <p:panel rendered="#{eanUploadMB.uploadHasErrors}">
-                    <h:outputText value=" Download report" />
-                <f:facet name="{Exporters}">
-                    <h:outputText value=" Download report" />
-                    <h:commandLink>
-                        <h:outputText value=" Download report" />
-                        <p:dataExporter type="csv" target="tbl" fileName="Ean_upload_errors" />
-                    </h:commandLink>
-                </f:facet>
-            </p:panel>
 
             <h:form enctype="multipart/form-data">
                 <p:fileUpload id="promotionSheet"  label="Select file, only CSV file format is allowed   "

@@ -18,7 +18,7 @@ import java.util.List;
 public class CsvParserUtility {
 
 
-    public static List<CsvDealRecord> getDealsRecordsFromFile(InputStreamReader inputStreamReader, String lineSeparator) {
+    public static List<CsvDealRecord> parseDealsRecords(InputStreamReader inputStreamReader, String lineSeparator) {
         long start2 = System.nanoTime();
 
         BeanListProcessor<CsvDealRecord> rowProcessor = new BeanListProcessor<>(CsvDealRecord.class);
@@ -30,7 +30,7 @@ public class CsvParserUtility {
         List<CsvDealRecord> csvDealRecords = rowProcessor.getBeans();
 
         System.out.println(
-                "getDealsRecordsFromFile took  : " +
+                "parseDealsRecords took  : " +
                         Precision.round((System.nanoTime() - start2) / 1000000000L, 6));
 
         return csvDealRecords;

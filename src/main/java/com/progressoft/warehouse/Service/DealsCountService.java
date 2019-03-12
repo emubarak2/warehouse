@@ -8,7 +8,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,17 +28,17 @@ public class DealsCountService {
 
     public void aggregateDealsCount(List<CsvDealRecord> fileDealRecords) {
 
-            Map<String, Long> fileDealsCount = new HashMap<>();
-            fileDealRecords.forEach(d -> {
-                        if (fileDealsCount.get(d.getFromCurrency()) != null) {
-                            fileDealsCount.put(d.getFromCurrency(), fileDealsCount.get(d.getFromCurrency()) + 1);
-                        } else {
-                            fileDealsCount.put(d.getFromCurrency(), 1L);
-                        }
-
+        Map<String, Long> fileDealsCount = new HashMap<>();
+        fileDealRecords.forEach(d -> {
+                    if (fileDealsCount.get(d.getFromCurrency()) != null) {
+                        fileDealsCount.put(d.getFromCurrency(), fileDealsCount.get(d.getFromCurrency()) + 1);
+                    } else {
+                        fileDealsCount.put(d.getFromCurrency(), 1L);
                     }
-            );
-            addDealCount(fileDealsCount);
+
+                }
+        );
+        addDealCount(fileDealsCount);
     }
 
 

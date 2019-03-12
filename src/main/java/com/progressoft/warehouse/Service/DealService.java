@@ -16,7 +16,6 @@ import java.io.InputStreamReader;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 /**
@@ -37,7 +36,7 @@ public class DealService {
     public List<CsvDealRecord> importRecords(InputStreamReader inputStreamReader, long fileIndex) {
         long start2 = System.nanoTime();
 
-        List<CsvDealRecord> dealRecords = CsvParserUtility.getDealsRecordsFromFile(inputStreamReader, "\n");
+        List<CsvDealRecord> dealRecords = CsvParserUtility.parseDealsRecords(inputStreamReader, "\n");
 
         dealRecords.parallelStream().forEach(d -> {
             List<Violation> violationList = validateRecord(d);
@@ -68,35 +67,6 @@ public class DealService {
     }
 
     public List<Violation> validateRecord(CsvDealRecord record) {
-//        ///am
-//
-//        List<Field> fields = Arrays.asList(record.getClass().getDeclaredFields())
-//                .stream()
-//                .filter(declaredField -> declaredField.getAnnotation(CsvDealRecord.Validate.class) != null)
-//                .collect(Collectors.toList());
-//        for (Field f : fields) {
-//
-//            CsvDealRecord.Validate annotation = f.getAnnotation(CsvDealRecord.Validate.class);
-//
-//            Class<? extends CsvDealRecord.Validator> value = annotation.value();
-//            CsvDealRecord.Validator validator = factory.getValidator(value);
-//            try {
-//                f.setAccessible(true);
-//                String o = (String) f.get(record);
-//                String toLow = o.toLowerCase();
-//                validator.isValid(o);
-//
-//
-//            } catch (Exception e) {
-//                violationList.add(new Violation(record.getFileId(), f.getName(), e.getMessage()));
-//            }
-//
-//
-//
-//
-//        }
-//
-//        //
         List<Violation> violationList = new ArrayList<>();
         for (Field field : record.getClass().getDeclaredFields()
                 ) {

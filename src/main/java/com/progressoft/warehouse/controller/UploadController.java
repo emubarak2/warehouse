@@ -1,26 +1,30 @@
 package com.progressoft.warehouse.controller;
 
+
+import com.progressoft.warehouse.Service.DealService;
+import com.progressoft.warehouse.Service.FileService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.context.annotation.RequestScope;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-
+/**
+ * Created by EYAD on 3/10/2019.
+ */
 @Controller()
-@RequestMapping("/normal")
+@RequestMapping("/dealService")
 @RequestScope
 public class UploadController {
 
-    //Save the uploaded file to this folder
+    @Autowired
+    DealService dealService;
+    @Autowired
+    FileService fileService;
 
-
+    @RequestMapping(path = "/upload/", method = RequestMethod.GET)
+    public String loginPage() {
+        return "/FileUpload.xhtml";
+    }
 
 }

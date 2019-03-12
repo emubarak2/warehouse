@@ -20,7 +20,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 @Repository
 @Slf4j
-public class BatchRepository<T extends DealRecord> {
+public class BatchRepository {
 
     @Autowired
     @Qualifier("WarehouseDataSource")
