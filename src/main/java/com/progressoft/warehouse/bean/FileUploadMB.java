@@ -5,6 +5,7 @@ import com.progressoft.warehouse.Service.FileService;
 import com.progressoft.warehouse.entity.Violation;
 import com.progressoft.warehouse.exception.FileExitsException;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.apache.commons.math3.util.Precision;
 import org.primefaces.component.fileupload.FileUpload;
 import org.primefaces.event.FileUploadEvent;
@@ -30,6 +31,7 @@ import java.util.List;
 @Named
 @ViewScoped
 @Data
+@NoArgsConstructor
 public class FileUploadMB extends FileUpload implements Serializable {
     public UploadedFile file;
     private List<CsvDealRecord> violationList = new ArrayList();
@@ -42,11 +44,6 @@ public class FileUploadMB extends FileUpload implements Serializable {
     @Autowired
     private DealService dealService;
     private String stringReport;
-
-    FileUploadMB() {
-        System.out.println("in FileUploadMB constructor");
-    }
-
 
     @Transient(value = false)
     public void fileUploadAction(FileUploadEvent event) throws IOException {
@@ -72,33 +69,37 @@ public class FileUploadMB extends FileUpload implements Serializable {
         List<CsvDealRecord> dealRecords = new ArrayList();
         String fileName;
 
-        try {
-            long start2 = System.nanoTime();
-            fileName = this.file.getFileName();
-            long fileIndex = fileService.getNextFileId(fileName);
-            dealRecords = dealService.importRecords(new InputStreamReader(file.getInputstream()), fileIndex);
+        if (file != null) {
+            try {
+                long start2 = System.nanoTime();
 
-            float timeConsumed = Precision.round((System.nanoTime() - start2) / 1000000000L, 6);
-            this.stringReport = generateReport(dealRecords, timeConsumed);
-        } catch (IOException | FileExitsException ex) {
-            report = ex.getMessage();
-            this.stringReport = ex.getMessage();
+                fileName = this.file.getFileName();
+                long fileIndex = fileService.getNextFileId(fileName);
+                dealRecords = dealService.importRecords(new InputStreamReader(file.getInputstream()), fileIndex);
 
-
+                float timeConsumed = Precision.round((System.nanoTime() - start2) / 1000000000L, 6);
+                this.stringReport = generateReport(dealRecords, timeConsumed);
+            } catch (IOException | FileExitsException ex) {
+                report = ex.getMessage();
+                this.stringReport = ex.getMessage();
+            }
+        } else {
+            stringReport = "Please a select a file before clicking on import.";
         }
     }
-
 
     public String generateReport(List<CsvDealRecord> dealRecords, float timeConsumed) {
 
         List<Violation> invalidRecords = dealService.getViolationRecords(dealRecords);
-        long validRecords = dealRecords.size() - invalidRecords.size();
+        long validRecords = dealService.getDeslsWithoutViolations(dealRecords);
+        long violationRecords  = dealRecords.size() - validRecords;
 
 
         StringBuilder sb = new StringBuilder(
                 "Your sheet has been imported successfully  '" + file.getFileName() +
                         "<br /> importing time was : " + timeConsumed + " seconds" +
                         "<br /> number of valid records was : " + validRecords +
+                        "<br /> number of violations records was : " + violationRecords +
                         "<br /> number of violations was : " + invalidRecords.size());
         return sb.toString();
 

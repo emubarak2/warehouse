@@ -56,8 +56,12 @@ public class DealService {
     }
 
     public List<Violation> getViolationRecords(List<CsvDealRecord> dealRecords) {
-     return  dealRecords.parallelStream()
+        return  dealRecords.parallelStream()
                 .flatMap(a -> a.getViolationsList().stream()).collect(Collectors.toList());
+    }
+
+    public long getDeslsWithoutViolations(List<CsvDealRecord> dealRecords) {
+        return dealRecords.size() - dealRecords.parallelStream().filter( d -> d.getViolationsList().size() > 0 ).count();
     }
 
     public List<Violation> validateRecord(CsvDealRecord record) {
