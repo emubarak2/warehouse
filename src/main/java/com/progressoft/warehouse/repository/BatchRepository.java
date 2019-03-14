@@ -1,15 +1,14 @@
 package com.progressoft.warehouse.repository;
 
 import com.progressoft.warehouse.bean.CsvDealRecord;
-import com.progressoft.warehouse.entity.Interface.DealRecord;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.math3.util.Precision;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,11 +27,19 @@ public class BatchRepository {
 
     public void saveBatch(List<CsvDealRecord> dealRecordList) {
 
+        int partitionSize = 1000;
+        List<List<CsvDealRecord>> partitions = new ArrayList<>();
+        for (int i = 0; i < dealRecordList.size(); i += partitionSize) {
+            partitions.add(dealRecordList.subList(i,
+                    Math.min(i + partitionSize, dealRecordList.size())));
+        }
 
-        Map<String, String> batchQueries = dealsQueryBuilder(dealRecordList);
-        decisionMaker(batchQueries);
+        for (List<CsvDealRecord> partition : partitions)
+        {
+            Map<String, String> batchQueries = dealsQueryBuilder(partition);
+            decisionMaker(batchQueries);
 
-
+        }
 
     }
 
@@ -57,22 +64,23 @@ public class BatchRepository {
         validSql.append("INSERT INTO DEALS_VALID_RECORDS (id, from_currency,to_currency,time_stamp, amount, file_id) VALUES ");
         invalidSql.append("INSERT INTO DEALS_INVALID_RECORDS (id, from_currency,to_currency,time_stamp, amount,violation, file_id) VALUES ");
 
+        AtomicInteger index = new AtomicInteger();
         dealRecordList.forEach(d -> {
-            switch (d.getViolationsList().size()) {
-                case 0:
+                switch (d.getViolationsList().size()) {
+                    case 0:
 
-                    validSql.append("(NULL,'").append(d.getFromCurrency()).append("', '")
-                            .append(d.getToCurrency()).append("', '").append(d.getTimeStamp()).append("', ").append(d.getAmount()).append(", ").append(d.getFileId()).append("),");
-                    validFlag.set(1);
-                    break;
+                        validSql.append("(NULL,'").append(d.getFromCurrency()).append("', '")
+                                .append(d.getToCurrency()).append("', '").append(d.getTimeStamp()).append("', ").append(d.getAmount()).append(", ").append(d.getFileId()).append("),");
+                        validFlag.set(1);
+                        break;
 
-                default:
-                    invalidSql.append("(NULL,'").append(d.getFromCurrency()).append("', '")
-                            .append(d.getToCurrency()).append("', '").append(d.getTimeStamp()).append("', ").append(d.getAmount()).append(", '").append(d.getViolationsList()).append("',").append(d.getFileId()).append("),");
-                    invalidFlag.set(1);
-                    break;
+                    default:
+                        invalidSql.append("(NULL,'").append(d.getFromCurrency()).append("', '")
+                                .append(d.getToCurrency()).append("', '").append(d.getTimeStamp()).append("', ").append(d.getAmount()).append(", '").append(d.getViolationsList()).append("',").append(d.getFileId()).append("),");
+                        invalidFlag.set(1);
+                        break;
 
-            }
+                }
 
         });
         validSql.delete(validSql.length() - 1, validSql.length());
@@ -95,29 +103,29 @@ public class BatchRepository {
     }
 
     public void batchThreadCreator(String query) {
-        JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
-            long start2 = System.nanoTime();
-            jdbcTemplate.batchUpdate(query.toString());
+        Runnable runnable = () -> {
 
-            System.out.println(
-                    "jdbcTemplate.batchUpdate took :  " +
-                            Precision.round((System.nanoTime() - start2) / 1000000000L, 6));
-
-
+            JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
+            jdbcTemplate.batchUpdate(query);
+        };
+        Thread t = new Thread(runnable);
+        t.start();
     }
 
     public void updateDealsCount(Map<String, Long> currencyCount) {
         String query = buildUpdateCountQuery(currencyCount);
-        if ( query != null ) {
+        if (query != null) {
             log.info("update query " + query);
-        batchThreadCreator(query); }
+            batchThreadCreator(query);
+        }
     }
 
     public void insertDealsCount(Map<String, Long> currencyCount) {
         String query = buildInsertCountQuery(currencyCount);
-        if ( query != null ) {
+        if (query != null) {
             log.info("insert  query " + query);
-        batchThreadCreator(query); }
+            batchThreadCreator(query);
+        }
     }
 
 
@@ -141,8 +149,9 @@ public class BatchRepository {
             currencyCount.entrySet().forEach(d -> query.append("( '").append(d.getKey()).append("',").append(d.getValue()).append("),"));
             query.delete(query.length() - 1, query.length());
             return query.toString();
-        } else
-        { return null;}
+        } else {
+            return null;
+        }
     }
 
 }

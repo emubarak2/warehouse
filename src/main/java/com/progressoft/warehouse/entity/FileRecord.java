@@ -1,6 +1,8 @@
 package com.progressoft.warehouse.entity;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -13,6 +15,8 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "FILE_NAME")
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class FileRecord {
 
     @Id

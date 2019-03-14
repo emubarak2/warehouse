@@ -34,11 +34,9 @@ public class DealService {
     private DealsCountService dealsCountService;
 
     public List<CsvDealRecord> importRecords(InputStreamReader inputStreamReader, long fileIndex) {
-        long start2 = System.nanoTime();
-
         List<CsvDealRecord> dealRecords = CsvParserUtility.parseDealsRecords(inputStreamReader, "\n");
 
-        dealRecords.parallelStream().forEach(d -> {
+        dealRecords.stream().forEach(d -> {
             List<Violation> violationList = validateRecord(d);
             d.setFileId(fileIndex);
             try {
@@ -50,10 +48,6 @@ public class DealService {
             }
         });
 
-
-        System.out.println(
-                "importRecords  : " +
-                        Precision.round((System.nanoTime() - start2) / 1000000000L, 6));
 
         saveRecordsToDatabase(dealRecords);
         dealsCountService.aggregateDealsCount(dealRecords);
@@ -70,24 +64,28 @@ public class DealService {
         List<Violation> violationList = new ArrayList<>();
         for (Field field : record.getClass().getDeclaredFields()
                 ) {
-            if (field.equals("")) {
-                violationList.add(new Violation(record.getFileId(), field.getName(), "Empty property value"));
-            }
-            if (field.equals(" ")) {
-                violationList.add(new Violation(record.getFileId(), field.getName(), "Property value is space"));
+            field.setAccessible(true);
+            try {
+                if (field.get(record) == null || field.equals("") ) {
+                    violationList.add(new Violation(record.getFileId(), field.getName(), "Empty property value"));
+                } else  if ( field.get(record).equals(" ")) {
+                    violationList.add(new Violation(record.getFileId(), field.getName(), "Property value is space"));
+                }
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
             }
         }
 
-        if (record.getToCurrency().equals("") || record.getToCurrency().equals(" ") || CurrencyCode.checkCodeExists(record.getToCurrency()).equals(Boolean.FALSE)) {
+        if (record.getToCurrency() != null && (record.getToCurrency().equals("") || record.getToCurrency().equals(" ") || CurrencyCode.checkCodeExists(record.getToCurrency()).equals(Boolean.FALSE))) {
             violationList.add(new Violation(record.getFileId(), "To Currency Code", "Property value is invalid"));
         }
 
-        if (record.getFromCurrency().equals("") || record.getFromCurrency().equals(" ") || CurrencyCode.checkCodeExists(record.getFromCurrency()).equals(Boolean.FALSE)) {
+        if (record.getFromCurrency() != null && (record.getFromCurrency().equals("") || record.getFromCurrency().equals(" ") || CurrencyCode.checkCodeExists(record.getFromCurrency()).equals(Boolean.FALSE))) {
             violationList.add(new Violation(record.getFileId(), "From Currency Code", "Property value is invalid"));
         }
 
         try {
-            if (!record.getAmount().equals("") && !record.getAmount().equals(" ") && Double.parseDouble(record.getAmount()) < 0) {
+            if (record.getAmount() != null && (!record.getAmount().equals("") && !record.getAmount().equals(" ") && Double.parseDouble(record.getAmount()) < 0)) {
                 violationList.add(new Violation(record.getFileId(), "Amount", "Property value is invalid(Negative)"));
             }
         } catch (NumberFormatException e) {
@@ -101,7 +99,7 @@ public class DealService {
 
     public void saveRecordsToDatabase(List<CsvDealRecord> dealRecords) {
 
-        batchRepository.saveBatch(dealRecords);
+       batchRepository.saveBatch(dealRecords);
     }
 
 

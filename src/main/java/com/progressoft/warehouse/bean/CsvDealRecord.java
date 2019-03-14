@@ -4,8 +4,8 @@ import com.progressoft.warehouse.entity.Violation;
 import com.univocity.parsers.annotations.LowerCase;
 import com.univocity.parsers.annotations.Parsed;
 import com.univocity.parsers.annotations.Trim;
+import lombok.AllArgsConstructor;
 import lombok.Data;
-import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,9 +14,8 @@ import java.util.List;
  * Created by EYAD on 3/7/2019.
  */
 @Data
+@AllArgsConstructor
 public class CsvDealRecord {
-
-    public Long fileIndex;
 
     @Trim
     @LowerCase
@@ -42,37 +41,14 @@ public class CsvDealRecord {
     private List<Violation> violationsList = new ArrayList<>();
     private long fileId;
 
+    public CsvDealRecord(){};
 
-//    public @interface Validate {
-//        Class<? extends Validator> value();
-//    }
-//
-//    public interface  Validator {
-//
-//        public boolean isValid(String value);
-//    }
-//
-//    @Component
-//    public class DoubleValidator implements Validator{
-//
-//
-//
-//        @Override
-//        public boolean isValid(String value) {
-//            if(value == null || value.isEmpty()) {
-//                return false;
-//            }
-//            try {
-//                Double.parseDouble(value);
-//            }catch(NumberFormatException e){
-//                return false;
-//            }
-//            return  true;
-//        }
-//    }
-
-
-
+    public CsvDealRecord(String fromCurrency, String toCurrency, String timeStamp, String amount) {
+        this.fromCurrency = fromCurrency;
+        this.toCurrency = toCurrency;
+        this.timeStamp = timeStamp;
+        this.amount = amount;
+    }
 
 
 }

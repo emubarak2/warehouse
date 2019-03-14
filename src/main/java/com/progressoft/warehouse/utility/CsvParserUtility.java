@@ -8,7 +8,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.math3.util.Precision;
 
 import java.io.InputStreamReader;
-import java.io.Reader;
 import java.util.List;
 
 /**
@@ -17,9 +16,7 @@ import java.util.List;
 @Slf4j
 public class CsvParserUtility {
 
-
     public static List<CsvDealRecord> parseDealsRecords(InputStreamReader inputStreamReader, String lineSeparator) {
-        long start2 = System.nanoTime();
 
         BeanListProcessor<CsvDealRecord> rowProcessor = new BeanListProcessor<>(CsvDealRecord.class);
         CsvParserSettings settings = new CsvParserSettings();
@@ -28,13 +25,7 @@ public class CsvParserUtility {
         CsvParser csvParser = new CsvParser(settings);
         csvParser.parse(inputStreamReader);
         List<CsvDealRecord> csvDealRecords = rowProcessor.getBeans();
-
-        System.out.println(
-                "parseDealsRecords took  : " +
-                        Precision.round((System.nanoTime() - start2) / 1000000000L, 6));
-
         return csvDealRecords;
     }
-
 
 }
